@@ -256,7 +256,7 @@ def evaluate(dataset:ModelParams, pipeline:PipelineParams, args):
             bg_color = [1,1,1] if dataset.white_background else [0, 0, 0]
             background = torch.tensor(bg_color, dtype=torch.float32, device="cuda")
             checkpoint = os.path.join(args.ckpt_paths[level_idx], f'chkpnt{args.checkpoint}.pth')
-            (model_params, first_iter) = torch.load(checkpoint)
+            (model_params, first_iter) = torch.load(checkpoint, weights_only=False)
             gaussians.restore(model_params, args, mode='test')
             
             language_feature_image = render_language_feature_map(gaussians, view, pipeline, background, args)
@@ -324,7 +324,7 @@ def evaluate_quick(dataset:ModelParams, pipeline:PipelineParams, args):
         views = scene.getTrainCameras()
         view = views[idx]
         checkpoint = os.path.join(args.ckpt_paths[0], f'chkpnt{args.checkpoint}.pth')
-        (model_params, first_iter) = torch.load(checkpoint)
+        (model_params, first_iter) = torch.load(checkpoint, weights_only=False)
         combined_gaussians.restore(model_params, args, mode='test')
         img_ann = gt_ann[f'{idx}']
         clip_model.set_positives(list(img_ann.keys()))
@@ -334,7 +334,7 @@ def evaluate_quick(dataset:ModelParams, pipeline:PipelineParams, args):
             # restore gaussian model
             gaussians = GaussianModel(dataset.sh_degree)
             checkpoint = os.path.join(args.ckpt_paths[level_idx], f'chkpnt{args.checkpoint}.pth')
-            (model_params, first_iter) = torch.load(checkpoint)
+            (model_params, first_iter) = torch.load(checkpoint, weights_only=False)
             gaussians.restore(model_params, args, mode='test')
             language_feature_codebooks.append(gaussians._language_feature_codebooks.view(-1, 512))
             weights, indices = get_weights_and_indices(gaussians._language_feature_logits, 4)

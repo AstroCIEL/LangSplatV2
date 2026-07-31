@@ -35,7 +35,7 @@ def get_weights_and_indices(logits, k):
     soft_code_topk = y_soft_topk
     non_zero_mask = soft_code_topk != 0
     weights = soft_code_topk[non_zero_mask].view(soft_code_topk.shape[0], k)
-    indices = torch.arange(y_soft_topk.shape[1]).expand_as(soft_code_topk)[non_zero_mask].view(soft_code_topk.shape[0], k)
+    indices = torch.arange(y_soft_topk.shape[1], device=y_soft_topk.device).expand_as(soft_code_topk)[non_zero_mask].view(soft_code_topk.shape[0], k)
 
     return weights.float(), indices.float()
 
