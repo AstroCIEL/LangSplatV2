@@ -1,11 +1,17 @@
 #!/bin/bash
 # Evaluate all installed LERF scenes and collect the summary metrics.
-export PATH="/data/home/rh_xu30/miniforge3/envs/langsplat_v2/bin:/usr/local/cuda-12.8/bin:$PATH"
-export CUDA_HOME=/usr/local/cuda-12.8
-export LD_LIBRARY_PATH="/data/home/rh_xu30/miniforge3/envs/langsplat_v2/lib/python3.10/site-packages/torch/lib:${LD_LIBRARY_PATH:-}"
-
+set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
+source "$ROOT/scripts/activate_env.sh"
+
+# CLIP / HF weight downloads need proxy on this machine; disable broken IPv6 path.
+export http_proxy="${http_proxy:-http://127.0.0.1:7890}"
+export https_proxy="${https_proxy:-http://127.0.0.1:7890}"
+export all_proxy="${all_proxy:-http://127.0.0.1:7890}"
+export no_proxy="${no_proxy:-localhost,127.0.0.1}"
+export PYTHONUNBUFFERED=1
+
 SUMMARY=/tmp/lerf_eval_summary.txt
 : > "$SUMMARY"
 
@@ -16,11 +22,13 @@ for scene in "${@:-teatime figurines ramen waldo_kitchen}"; do
   fi
   echo "=== [$scene] evaluating ==="
   log="/tmp/eval_${scene}.log"
+  set +e
   bash eval_lerf.sh "$scene" 0 10000 > "$log" 2>&1
   rc=$?
+  set -e
   if [ $rc -ne 0 ]; then
     echo "[$scene] FAILED (rc=$rc)" | tee -a "$SUMMARY"
-    grep -a -A5 "Traceback" "$log" | tail -20
+    grep -a -A8 "Traceback\|Error\|error:" "$log" | tail -40
     continue
   fi
   iou=$(grep -aoE "iou chosen: [0-9.]+" "$log" | tail -1 | awk '{print $3}')

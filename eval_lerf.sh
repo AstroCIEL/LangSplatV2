@@ -4,9 +4,9 @@ INDEX=$2
 CHECKPOINT=$3
 TOPK=4
 
-# path to lerf_ovs/label
-DATASET_ROOT_PATH=../../data/lerf_ovs
-gt_folder=../../data/lerf_ovs/label
+# path to lerf_ovs/label (repo-local dataset)
+DATASET_ROOT_PATH=./data/lerf_ovs
+gt_folder=./data/lerf_ovs/label
 
 ROOT_PATH="."
 

@@ -1,7 +1,7 @@
 output/
 eval_result/
 data/
-ckpts/
+ckpts
 *.pth
 # Byte-compiled / optimized / DLL files
 __pycache__/

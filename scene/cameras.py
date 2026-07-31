@@ -15,6 +15,17 @@ from torch import nn
 import numpy as np
 from utils.graphics_utils import getWorld2View2, getProjectionMatrix
 
+
+def _inverse_4x4(mat: torch.Tensor) -> torch.Tensor:
+    """Invert a 4x4 matrix on CPU.
+
+    JetPack 6.2's libcusolver lacks cusolverDnXsyevBatched_* symbols that
+    torch 2.8's CUDA linalg needs, so CUDA .inverse() can fail to dlopen
+    libtorch_cuda_linalg.so. 4x4 camera matrices are cheap on CPU.
+    """
+    return mat.cpu().inverse().to(device=mat.device, dtype=mat.dtype)
+
+
 class Camera(nn.Module):
     def __init__(self, colmap_id, R, T, FoVx, FoVy, image, gt_alpha_mask,
                  image_name, uid,
@@ -54,7 +65,7 @@ class Camera(nn.Module):
         self.world_view_transform = torch.tensor(getWorld2View2(R, T, trans, scale)).transpose(0, 1).cuda()
         self.projection_matrix = getProjectionMatrix(znear=self.znear, zfar=self.zfar, fovX=self.FoVx, fovY=self.FoVy).transpose(0,1).cuda()
         self.full_proj_transform = (self.world_view_transform.unsqueeze(0).bmm(self.projection_matrix.unsqueeze(0))).squeeze(0)
-        self.camera_center = self.world_view_transform.inverse()[3, :3]
+        self.camera_center = _inverse_4x4(self.world_view_transform)[3, :3]
     def get_language_feature(self, language_feature_dir, feature_level):
         language_feature_name = os.path.join(language_feature_dir, self.image_name)
         seg_map = torch.from_numpy(np.load(language_feature_name + '_s.npy'))
@@ -92,6 +103,6 @@ class MiniCam:
         self.zfar = zfar
         self.world_view_transform = world_view_transform
         self.full_proj_transform = full_proj_transform
-        view_inv = torch.inverse(self.world_view_transform)
+        view_inv = _inverse_4x4(self.world_view_transform)
         self.camera_center = view_inv[3][:3]
 
