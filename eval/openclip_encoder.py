@@ -113,27 +113,41 @@ class OpenCLIPNetwork:
     
     def get_max_across_quick(self, sem_map):
         """
-        sem_map: [n_levels, H, W, 512]
+        sem_map: [n_levels, H, W, 512] (NHWC; often a non-contiguous view of NCHW)
         Output: [n_levels, n_phrases, H, W]
+
+        Matmul stays in channel-first form ([L,C,HW] x phrases) so a non-contiguous
+        NHWC view from NCHW.permute(0,2,3,1) is restored with a cheap permute view
+        instead of an O(H*W*C) strided gather into [L,HW,C].
         """
         device = sem_map.device
         n_levels, h, w, c = sem_map.shape
         n_phrases = len(self.positives)
         n_negatives = len(self.negatives)
 
-        sem_map_flat = sem_map.permute(0, 3, 1, 2).reshape(n_levels, c, -1)  # [n_levels, 512, H*W]
-        sem_map_flat = sem_map_flat.permute(0, 2, 1).contiguous()  # [n_levels, H*W, 512]
+        # NHWC -> NCHW. If sem_map is permute(0,2,3,1) of contiguous NCHW, this is a view.
+        feat_nchw = sem_map.permute(0, 3, 1, 2)
+        if not feat_nchw.is_contiguous():
+            feat_nchw = feat_nchw.contiguous()
+        flat_c_hw = feat_nchw.reshape(n_levels, c, h * w)  # [L, C, HW]
 
-        phrase_embeds = torch.cat([self.pos_embeds, self.neg_embeds], dim=0).to(sem_map.dtype).to(device)  # [P+N, 512]
-        sim = torch.einsum('nqc,pc->nqp', sem_map_flat, phrase_embeds)  # [n_levels, H*W, P+N]
-        pos_vals = sim[:, :, :n_phrases]  # [n_levels, H*W, P]
-        neg_vals = sim[:, :, n_phrases:]  # [n_levels, H*W, N]
+        phrase_embeds = torch.cat(
+            [self.pos_embeds, self.neg_embeds], dim=0
+        ).to(dtype=sem_map.dtype, device=device)  # [P+N, C]
 
-        repeated_pos = pos_vals.unsqueeze(-1).repeat(1, 1, 1, n_negatives)  # [n_levels, H*W, P, N]
-        neg_vals_exp = neg_vals.unsqueeze(2).repeat(1, 1, n_phrases, 1)     # [n_levels, H*W, P, N]
+        # [P+N, C] @ [L, C, HW] -> [L, P+N, HW] -> [L, HW, P+N]
+        # (torch.einsum("lcq,pc->lqp", ...) is much slower on this layout)
+        sim = torch.matmul(phrase_embeds, flat_c_hw).permute(0, 2, 1)
+        pos_vals = sim[:, :, :n_phrases]  # [L, HW, P]
+        neg_vals = sim[:, :, n_phrases:]  # [L, HW, N]
 
-        sims = torch.stack([repeated_pos, neg_vals_exp], dim=-1)  # [n_levels, H*W, P, N, 2]
-        softmax = torch.softmax(10 * sims, dim=-1)  # [n_levels, H*W, P, N, 2]
-        min_pos_prob, _ = softmax[..., 0].min(dim=-1)  # [n_levels, H*W, P]
-        relev_map = min_pos_prob.permute(0, 2, 1).reshape(n_levels, n_phrases, h, w)  # [n_levels, P, H, W]
+        # Binary softmax([pos, neg])[..., 0] == sigmoid(10*(pos-neg)); then min
+        # over negatives. Same as prior expand+softmax path without [L,HW,P,N,2].
+        prob_pos = torch.sigmoid(
+            10.0 * (pos_vals.unsqueeze(-1) - neg_vals.unsqueeze(2))
+        )  # [L, HW, P, N]
+        min_pos_prob = prob_pos.min(dim=-1).values  # [L, HW, P]
+        relev_map = min_pos_prob.permute(0, 2, 1).reshape(
+            n_levels, n_phrases, h, w
+        )
         return relev_map

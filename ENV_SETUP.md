@@ -34,11 +34,14 @@ export https_proxy="http://127.0.0.1:7890"
 - Language features: reuse existing `language_features/` from LangSplat preprocess (same format)
 - V2 pretrained weights: extract into `./output/` (e.g. `teatime_0_1`, ...)
 
-## Quick eval (after weights downloaded)
+## Latency (per-forward breakdown)
 ```bash
 source scripts/activate_env.sh
-bash eval_lerf.sh teatime 0 10000
+bash scripts/latency/run_lerf_latency.sh            # all LERF scenes
+# Optional NCU kernel split of render.raster (needs root):
+sudo -E bash scripts/latency/ana_langsplatv2.sh teatime
 ```
+Reports: `eval_result/<scene>_0/latency/latency_breakdown.{txt,json}`
 
 ## Pretrained weights download
 ```bash

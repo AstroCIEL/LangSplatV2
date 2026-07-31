@@ -118,6 +118,12 @@ Download the pretrained model to ```output/```, then simply use
 bash eval_lerf.sh $scene_name $model_idx $checkpoint
 ```
 
+## Local notes (Jetson / latency)
+
+`eval/openclip_encoder.py::get_max_across_quick` was optimized to avoid an expensive NHWC strided gather on the language feature map (common when features are `permute`d from NCHW). It now does channel-first `matmul` plus an equivalent `sigmoid` form of the binary soft-relevancy. Numerically matches the previous path; relevancy latency drops sharply (e.g. ~1.4s → ~56ms per query on Orin).
+
+See `ENV_SETUP.md` and `scripts/latency/` for Jetson env setup and per-forward latency profiling.
+
 ## Pipeline
 
 The pipeline for training LangSplat V2 and evaluation.
@@ -144,47 +150,4 @@ The pipeline for training LangSplat V2 and evaluation.
   bash eval_mip_nerf360.sh $scene_name $model_idx $checkpoint
   ```
 
-## TODO list:
-- [x] update the arxiv link
-- [x] release more model weights
-- [x] release more code of evaluation
-
-
-<section class="section" id="BibTeX">
-  <div class="container is-max-desktop content">
-    <h2 class="title">BibTeX</h2>
-    <pre><code>@article{li2025langsplatv2,
-      title={LangSplatV2: High-dimensional 3D Language Gaussian Splatting with 450+ FPS}, 
-      author={Wanhua Li and Yujie Zhao and Minghan Qin and Yang Liu and Yuanhao Cai and Chuang Gan and Hanspeter Pfister},
-      year={2025},
-      journal={Advances in Neural Information Processing Systems},
-      eprint={2507.07136},
-      archivePrefix={arXiv},
-      primaryClass={cs.GR},
-      url={https://arxiv.org/abs/2507.07136}, 
-}</code></pre>
-  </div>
-</section>
-
-<section class="section" id="Research Series">
-  <div class="container is-max-desktop content">
-    <h2 class="title">Research Series</h2>
-    <a href="https://langsplat.github.io/" target="_blank" style="text-decoration: underline;">[CVPR 2024] Langsplat: 3d language gaussian splatting</a>
-    <pre><code>@inproceedings{qin2024langsplat,
-  title={Langsplat: 3d language gaussian splatting},
-  author={Qin, Minghan and Li, Wanhua and Zhou, Jiawei and Wang, Haoqian and Pfister, Hanspeter},
-  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
-  pages={20051--20060},
-  year={2024}
-}</code></pre>
-    <a href="https://4d-langsplat.github.io/" target="_blank" style="text-decoration: underline;">[CVPR 2025] 4d langsplat: 4d language gaussian splatting via multimodal large language models</a>
-    <pre><code>@inproceedings{li20254d,
-  title={4d langsplat: 4d language gaussian splatting via multimodal large language models},
-  author={Li, Wanhua and Zhou, Renping and Zhou, Jiawei and Song, Yingwei and Herter, Johannes and Qin, Minghan and Huang, Gao and Pfister, Hanspeter},
-  booktitle={Proceedings of the Computer Vision and Pattern Recognition Conference},
-  pages={22001--22011},
-  year={2025}
-}</code></pre>
-  </div>
-</section>
 
