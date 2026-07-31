@@ -1,19 +1,30 @@
-# LangSplatV2 Environment Setup (local)
+# LangSplatV2 Environment Setup (local / Jetson Orin)
 
-## Conda env
+Reuse the existing OpenGaussian conda env `gs` (Python 3.10 + Torch 2.8.0 cu126 aarch64).
+Do **not** use the upstream `environment.yml` (py3.7 / torch1.12 / CUDA11.6 — not available on Jetson).
+
+## Activate
 ```bash
+source ~/Work/LangSplatV2/scripts/activate_env.sh
+# or manually:
 source ~/miniforge3/etc/profile.d/conda.sh
-conda activate langsplat_v2
-# Prefer env binaries over /usr/local/miniconda
-export PATH="$CONDA_PREFIX/bin:/usr/local/cuda-12.8/bin:$PATH"
-export CUDA_HOME=/usr/local/cuda-12.8
+conda activate gs
+export PATH="$CONDA_PREFIX/bin:/usr/local/cuda-12.6/bin:$PATH"
+export CUDA_HOME=/usr/local/cuda-12.6
 export LD_LIBRARY_PATH="$CONDA_PREFIX/lib/python3.10/site-packages/torch/lib:${LD_LIBRARY_PATH:-}"
-export TORCH_CUDA_ARCH_LIST=12.0
-# If need network:
-export http_proxy="socks5h://127.0.0.1:2345"
-export https_proxy="socks5h://127.0.0.1:2345"
-export all_proxy="socks5h://127.0.0.1:2345"
+export TORCH_CUDA_ARCH_LIST=8.7
+# If need network (Clash HTTP on this machine is :7890; SOCKS may be elsewhere):
+export http_proxy="http://127.0.0.1:7890"
+export https_proxy="http://127.0.0.1:7890"
 ```
+
+## Installed into `gs` for this project
+- Python deps: `open-clip-torch`, `tensorboard`, `jaxtyping`, `matplotlib`, `scikit-learn`, …
+- Local wheels reused: `~/Downloads/.wheels/torch*-linux_aarch64.whl` (already in `gs`)
+- CUDA extensions (built with `TORCH_CUDA_ARCH_LIST=8.7`, `CUDA_HOME=/usr/local/cuda-12.6`):
+  - `submodules/efficient-langsplat-rasterization` → `diff_gaussian_rasterization`
+  - `submodules/simple-knn` (patched `#include <float.h>`)
+  - `submodules/segment-anything-langsplat`
 
 ## Layout
 - Dataset (LERF): `~/data/lerf_ovs` → symlink to `~/Work/LangSplat/data/lerf_ovs`
@@ -25,16 +36,17 @@ export all_proxy="socks5h://127.0.0.1:2345"
 
 ## Quick eval (after weights downloaded)
 ```bash
+source scripts/activate_env.sh
 bash eval_lerf.sh teatime 0 10000
 ```
 
-## Pretrained weights download (in progress / resume)
+## Pretrained weights download
 ```bash
-export http_proxy="socks5h://127.0.0.1:2345" https_proxy="socks5h://127.0.0.1:2345" all_proxy="socks5h://127.0.0.1:2345"
+export http_proxy="http://127.0.0.1:7890" https_proxy="http://127.0.0.1:7890"
 source scripts/activate_env.sh
 mkdir -p /tmp/langsplatv2_weights/LERF && cd /tmp/langsplatv2_weights/LERF
 # LERF teatime (~6.5GB)
-gdown "159jEgMG5SGeFbFcLoqFr7OpqW5yzctt3" -O teatime.tar.gz --proxy "socks5h://127.0.0.1:2345"
+gdown "159jEgMG5SGeFbFcLoqFr7OpqW5yzctt3" -O teatime.tar.gz
 # Other LERF scenes (optional):
 # figurines: 1qKtjgTgt9xIkBsufiRZH6Mjo6DZSPqc_
 # ramen:     12Zgqx_bXt7Hxi7vh3jko1AGvLedd96AX
