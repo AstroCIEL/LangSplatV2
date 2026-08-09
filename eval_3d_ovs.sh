@@ -3,9 +3,9 @@ DATASET_NAME=$1
 INDEX=$2
 CHECKPOINT=$3
 
-# path to lerf_ovs/label
-DATASET_ROOT_PATH=../../data/3D_OVS
-gt_folder=../../data/3D_OVS/${DATASET_NAME}/segmentations
+# path to 3D_OVS dataset
+DATASET_ROOT_PATH=./data/3D_OVS
+gt_folder=./data/3D_OVS/${DATASET_NAME}/segmentations
 
 ROOT_PATH="."
 

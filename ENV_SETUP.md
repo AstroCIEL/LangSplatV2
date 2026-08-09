@@ -35,14 +35,21 @@ export https_proxy="http://127.0.0.1:7890"
 - V2 pretrained weights: extract into `./output/` (e.g. `teatime_0_1`, ...)
 
 ## Latency (per-forward breakdown)
+
+Full method, stage glossary, 1q/mq, and codebook-fusion A/B:
+
+→ **[`scripts/latency/README.md`](scripts/latency/README.md)**
+
 ```bash
 source scripts/activate_env.sh
-bash scripts/latency/run_lerf_latency.sh            # all LERF scenes
+bash scripts/latency/run_lerf_latency.sh              # 1q, all LERF scenes
+MODE=mq bash scripts/latency/run_lerf_latency.sh      # multi-query
 # Optional NCU kernel split of render.raster (needs root):
 sudo -E bash scripts/latency/ana_langsplatv2.sh teatime
 ```
-Reports: `eval_result/<scene>_0/latency/latency_breakdown.{txt,json}`
 
+Reports: `eval_result/<scene>_0/latency*/latency_breakdown.{txt,json}`
+Compare dump (feature vs codebook): `eval_result/codebook_fusion_latency_compare.txt`
 ## Pretrained weights download
 ```bash
 export http_proxy="http://127.0.0.1:7890" https_proxy="http://127.0.0.1:7890"

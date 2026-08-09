@@ -122,7 +122,7 @@ bash eval_lerf.sh $scene_name $model_idx $checkpoint
 
 `eval/openclip_encoder.py::get_max_across_quick` was optimized to avoid an expensive NHWC strided gather on the language feature map (common when features are `permute`d from NCHW). It now does channel-first `matmul` plus an equivalent `sigmoid` form of the binary soft-relevancy. Numerically matches the previous path; relevancy latency drops sharply (e.g. ~1.4s → ~56ms per query on Orin).
 
-See `ENV_SETUP.md` and `scripts/latency/` for Jetson env setup and per-forward latency profiling.
+See `ENV_SETUP.md` and [`scripts/latency/README.md`](scripts/latency/README.md) for Jetson env setup and per-forward latency profiling (method, stages, 1q/mq, codebook fusion).
 
 ## Pipeline
 

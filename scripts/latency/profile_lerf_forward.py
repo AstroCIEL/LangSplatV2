@@ -35,6 +35,7 @@ from scene import Scene
 from utils.general_utils import safe_state
 from utils.latency_utils import LatencyProfiler
 from utils.vq_utils import get_weights_and_indices
+from utils.codebook_domain_fusion import precompute_gram, relevancy_codebook_domain
 
 
 def _load_combined_gaussians(dataset, args, pipeline, profiler: LatencyProfiler):
@@ -94,8 +95,11 @@ def _forward_once(
     clip_model,
     prompts,
     profiler: LatencyProfiler,
+    gram: torch.Tensor | None = None,
 ):
-    """One view forward with stage timing. Returns feature map [3,H,W,512]."""
+    """One view forward with stage timing."""
+    mode = getattr(args, "semantic_mode", "feature")
+
     with profiler.scope("text.encode"):
         clip_model.set_positives(prompts)
 
@@ -104,28 +108,37 @@ def _forward_once(
             view, gaussians, pipeline, background, args, profiler=profiler
         )
         language_feature_weight_map = output["language_feature_weight_map"]
+        codebooks = gaussians._language_feature_codebooks  # [3, 64, 512]
+        _, H, W = language_feature_weight_map.shape
+        weight_map = language_feature_weight_map.view(3, 64, H, W)
 
-        with profiler.scope("decode.einsum"):
-            D, H, W = language_feature_weight_map.shape
-            weight_map = language_feature_weight_map.view(3, 64, H, W).view(
-                3, 64, H * W
+        if mode == "codebook":
+            assert gram is not None
+            _ = relevancy_codebook_domain(
+                weight_map,
+                codebooks,
+                gram,
+                clip_model.pos_embeds,
+                clip_model.neg_embeds,
+                profiler=profiler,
             )
-            codebooks = gaussians._language_feature_codebooks.permute(0, 2, 1)
-            language_feature_map = torch.einsum(
-                "ldk,lkn->ldn", codebooks, weight_map
-            ).view(3, 512, H, W)
+        else:
+            with profiler.scope("decode.einsum"):
+                w = weight_map.view(3, 64, H * W)
+                cb = codebooks.permute(0, 2, 1)
+                language_feature_map = torch.einsum(
+                    "ldk,lkn->ldn", cb, w
+                ).view(3, 512, H, W)
 
-        with profiler.scope("decode.normalize"):
-            language_feature_map = language_feature_map / (
-                language_feature_map.norm(dim=1, keepdim=True) + 1e-10
-            )
+            with profiler.scope("decode.normalize"):
+                language_feature_map = language_feature_map / (
+                    language_feature_map.norm(dim=1, keepdim=True) + 1e-10
+                )
 
-        restored = language_feature_map.permute(0, 2, 3, 1)
+            restored = language_feature_map.permute(0, 2, 3, 1)
 
-        with profiler.scope("relevancy.clip_match"):
-            _ = clip_model.get_max_across_quick(restored)
-
-    return restored
+            with profiler.scope("relevancy.clip_match"):
+                _ = clip_model.get_max_across_quick(restored)
 
 
 def main():
@@ -165,6 +178,13 @@ def main():
         default=-1,
         help="Use only the first N GT phrases per view (-1 = all). "
         "Use 1 for paper-style single-query latency.",
+    )
+    parser.add_argument(
+        "--semantic_mode",
+        type=str,
+        default="feature",
+        choices=["feature", "codebook"],
+        help="feature = decode(512)+match; codebook = Exact Codebook-Domain Fusion",
     )
 
     args = get_combined_args(parser)
@@ -208,6 +228,11 @@ def main():
         dataset, args, pipe, profiler
     )
 
+    gram = None
+    if args.semantic_mode == "codebook":
+        with profiler.scope("prep.gram"):
+            gram = precompute_gram(gaussians._language_feature_codebooks)
+
     def _prompts_for(idx: int):
         prompts = list(gt_ann[f"{idx}"].keys())
         n = int(getattr(args, "queries_per_view", -1) or -1)
@@ -231,6 +256,7 @@ def main():
                 clip_model,
                 warm_prompts,
                 LatencyProfiler(enabled=False),
+                gram=gram,
             )
         torch.cuda.synchronize()
 
@@ -249,13 +275,21 @@ def main():
             clip_model,
             prompts,
             profiler,
+            gram=gram,
         )
 
     avg_p = (sum(prompts_per_fwd) / len(prompts_per_fwd)) if prompts_per_fwd else 0.0
+    if args.semantic_mode == "codebook":
+        scales = "text.encode, fuse.proj_text, fuse.match"
+        indep = "render.setup, render.raster, fuse.pixel_norm"
+    else:
+        scales = "text.encode, relevancy.clip_match"
+        indep = "render.setup, render.raster, decode.einsum, decode.normalize"
     profiler.add_meta(
         dataset_name=args.dataset_name,
         checkpoint=args.checkpoint,
         quick_render=True,
+        semantic_mode=args.semantic_mode,
         num_forwards=len(eval_index_list),
         num_queries=n_queries,
         queries_per_view=int(getattr(args, "queries_per_view", -1) or -1),
@@ -264,8 +298,8 @@ def main():
         ncu_mode=bool(args.ncu_mode),
         image_hw=f"{views[eval_index_list[0]].image_height}x{views[eval_index_list[0]].image_width}",
         num_gaussians=int(gaussians.get_xyz.shape[0]),
-        scales_with_P="text.encode, relevancy.clip_match",
-        independent_of_P="render.setup, render.raster, decode.einsum, decode.normalize",
+        scales_with_P=scales,
+        independent_of_P=indep,
     )
     report = os.path.join(out_dir, "latency_breakdown.txt")
     profiler.print_summary()

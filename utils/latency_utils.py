@@ -106,7 +106,7 @@ class LatencyProfiler:
             lines.append(f"  {k}: {v}")
 
         # Per-forward focus stages (excludes load_* / prep.vq / I/O)
-        focus_prefixes = ("text.", "render.", "decode.", "relevancy.")
+        focus_prefixes = ("text.", "render.", "decode.", "relevancy.", "fuse.")
         focus_names = [k for k in self.totals if any(k.startswith(p) for p in focus_prefixes)]
         focus_tot = self._group_totals(focus_prefixes) or 1e-12
 
@@ -151,17 +151,37 @@ class LatencyProfiler:
         lines.append("")
         lines.append("Notes")
         lines.append("  - FOCUS excludes load_* and prep.vq_* (scene-level, not per-view).")
+        mode = str(self.meta.get("semantic_mode", "feature"))
         lines.append("  - Scaling vs number of text queries P (per view):")
-        lines.append("      DEPENDS ON P:  text.encode, relevancy.clip_match")
-        lines.append("      INDEPENDENT:  render.setup, render.raster, decode.einsum, decode.normalize")
-        lines.append("    (feature map is rendered once; only text encode + relevancy grow with P)")
+        if mode == "codebook":
+            lines.append(
+                "      DEPENDS ON P:  text.encode, fuse.proj_text, fuse.match"
+            )
+            lines.append(
+                "      INDEPENDENT:  render.*, fuse.pixel_norm (no HxWx512 decode)"
+            )
+            lines.append(
+                "  - Exact Codebook-Domain Relevance Fusion: cos = (c·z_q)/sqrt(cGc^T)"
+            )
+            lines.append("  - fuse.proj_text: z_q = S q  in L-dim (L=64).")
+            lines.append("  - fuse.pixel_norm: ||f|| via Gram G=SS^T in coefficient domain.")
+            lines.append("  - fuse.match: soft-relevancy from codebook-domain cosines.")
+        else:
+            lines.append("      DEPENDS ON P:  text.encode, relevancy.clip_match")
+            lines.append(
+                "      INDEPENDENT:  render.setup, render.raster, decode.einsum, decode.normalize"
+            )
+            lines.append(
+                "    (feature map is rendered once; only text encode + relevancy grow with P)"
+            )
+            lines.append("  - decode.einsum: codebook x weight-map -> 3x512 feature maps.")
+            lines.append("  - decode.normalize: L2 normalize language features.")
+            lines.append(
+                "  - relevancy.clip_match: pixel features vs P text embeds + soft relevancy"
+            )
         lines.append("  - text.encode: OpenCLIP text encode for the P query phrases.")
         lines.append("  - render.setup: gather Gaussian attrs + build rasterizer settings.")
         lines.append("  - render.raster: CUDA efficient-langsplat raster (sparse top-k weights).")
-        lines.append("  - decode.einsum: codebook x weight-map -> 3x512 feature maps.")
-        lines.append("  - decode.normalize: L2 normalize language features.")
-        lines.append("  - relevancy.clip_match: pixel features vs P text embeds + soft relevancy")
-        lines.append("    (NCHW matmul path; avoids NHWC strided gather).")
         lines.append("  - For GPU-kernel split of render.raster, see scripts/latency/ana_langsplatv2.sh")
         return lines
 
