@@ -1,0 +1,259 @@
+{
+  "mode": "multi_scene",
+  "dataset": "3d_ovs",
+  "scenes": [
+    {
+      "scene": "bed",
+      "total_cycles": 88984491.46777527,
+      "fps": 11.237913298208134,
+      "gfp_cycles": 1899452.7649769585,
+      "sort_cycles": 10077818.19102758,
+      "raster_cycles": 10104779.910152009,
+      "decode_cycles": 31124263.192183018,
+      "ftg_cycles": 0.0,
+      "semantic_cycles": 52554852.9953917,
+      "dram_cycles": 67764536.31933835,
+      "frame_cycles": [
+        88984491.46777527
+      ],
+      "frame_times": [
+        0.08898449146777528
+      ],
+      "module_busy": {
+        "gfp": 1899452.7649769585,
+        "hse": 10077818.19102758,
+        "ure": 10104779.910152009,
+        "sde": 31124263.192183018,
+        "semantic": 52554852.9953917,
+        "dram": 67764536.31933835
+      },
+      "dram_bytes": {
+        "gaussian_read": 48000000.0,
+        "sort_read": 3176472.0,
+        "raster_read": 133411824.0,
+        "feature_write": 1592524800.0,
+        "feature_readback": 1592524800.0
+      },
+      "pixels": {
+        "full": 1555200,
+        "coarse": 0,
+        "fine": 1555200.0,
+        "roi_fraction": 1.0,
+        "fallback_rate": 0.0,
+        "scar_skip_ratio": 0.0
+      },
+      "notes": {
+        "sde": 20.01302931596091,
+        "feature_write": 20.0,
+        "feature_readback": 20.0,
+        "spu_stream": 10.0,
+        "gaussian_bytes": 336.0
+      },
+      "start_time": "2026-10-10T08:51:59.374864",
+      "elapsed_time": 0.37059593200683594
+    },
+    {
+      "scene": "lawn",
+      "total_cycles": 88984491.46777527,
+      "fps": 11.237913298208134,
+      "gfp_cycles": 1899452.7649769585,
+      "sort_cycles": 10077818.19102758,
+      "raster_cycles": 10104779.910152009,
+      "decode_cycles": 31124263.192183018,
+      "ftg_cycles": 0.0,
+      "semantic_cycles": 52554852.9953917,
+      "dram_cycles": 67764536.31933835,
+      "frame_cycles": [
+        88984491.46777527
+      ],
+      "frame_times": [
+        0.08898449146777528
+      ],
+      "module_busy": {
+        "gfp": 1899452.7649769585,
+        "hse": 10077818.19102758,
+        "ure": 10104779.910152009,
+        "sde": 31124263.192183018,
+        "semantic": 52554852.9953917,
+        "dram": 67764536.31933835
+      },
+      "dram_bytes": {
+        "gaussian_read": 48000000.0,
+        "sort_read": 3176472.0,
+        "raster_read": 133411824.0,
+        "feature_write": 1592524800.0,
+        "feature_readback": 1592524800.0
+      },
+      "pixels": {
+        "full": 1555200,
+        "coarse": 0,
+        "fine": 1555200.0,
+        "roi_fraction": 1.0,
+        "fallback_rate": 0.0,
+        "scar_skip_ratio": 0.0
+      },
+      "notes": {
+        "sde": 20.01302931596091,
+        "feature_write": 20.0,
+        "feature_readback": 20.0,
+        "spu_stream": 10.0,
+        "gaussian_bytes": 336.0
+      },
+      "start_time": "2026-10-10T08:51:59.914976",
+      "elapsed_time": 0.3698148727416992
+    },
+    {
+      "scene": "room",
+      "total_cycles": 88984491.46777527,
+      "fps": 11.237913298208134,
+      "gfp_cycles": 1899452.7649769585,
+      "sort_cycles": 10077818.19102758,
+      "raster_cycles": 10104779.910152009,
+      "decode_cycles": 31124263.192183018,
+      "ftg_cycles": 0.0,
+      "semantic_cycles": 52554852.9953917,
+      "dram_cycles": 67764536.31933835,
+      "frame_cycles": [
+        88984491.46777527
+      ],
+      "frame_times": [
+        0.08898449146777528
+      ],
+      "module_busy": {
+        "gfp": 1899452.7649769585,
+        "hse": 10077818.19102758,
+        "ure": 10104779.910152009,
+        "sde": 31124263.192183018,
+        "semantic": 52554852.9953917,
+        "dram": 67764536.31933835
+      },
+      "dram_bytes": {
+        "gaussian_read": 48000000.0,
+        "sort_read": 3176472.0,
+        "raster_read": 133411824.0,
+        "feature_write": 1592524800.0,
+        "feature_readback": 1592524800.0
+      },
+      "pixels": {
+        "full": 1555200,
+        "coarse": 0,
+        "fine": 1555200.0,
+        "roi_fraction": 1.0,
+        "fallback_rate": 0.0,
+        "scar_skip_ratio": 0.0
+      },
+      "notes": {
+        "sde": 20.01302931596091,
+        "feature_write": 20.0,
+        "feature_readback": 20.0,
+        "spu_stream": 10.0,
+        "gaussian_bytes": 336.0
+      },
+      "start_time": "2026-10-10T08:52:00.453789",
+      "elapsed_time": 0.3832108974456787
+    },
+    {
+      "scene": "sofa",
+      "total_cycles": 88984491.46777527,
+      "fps": 11.237913298208134,
+      "gfp_cycles": 1899452.7649769585,
+      "sort_cycles": 10077818.19102758,
+      "raster_cycles": 10104779.910152009,
+      "decode_cycles": 31124263.192183018,
+      "ftg_cycles": 0.0,
+      "semantic_cycles": 52554852.9953917,
+      "dram_cycles": 67764536.31933835,
+      "frame_cycles": [
+        88984491.46777527
+      ],
+      "frame_times": [
+        0.08898449146777528
+      ],
+      "module_busy": {
+        "gfp": 1899452.7649769585,
+        "hse": 10077818.19102758,
+        "ure": 10104779.910152009,
+        "sde": 31124263.192183018,
+        "semantic": 52554852.9953917,
+        "dram": 67764536.31933835
+      },
+      "dram_bytes": {
+        "gaussian_read": 48000000.0,
+        "sort_read": 3176472.0,
+        "raster_read": 133411824.0,
+        "feature_write": 1592524800.0,
+        "feature_readback": 1592524800.0
+      },
+      "pixels": {
+        "full": 1555200,
+        "coarse": 0,
+        "fine": 1555200.0,
+        "roi_fraction": 1.0,
+        "fallback_rate": 0.0,
+        "scar_skip_ratio": 0.0
+      },
+      "notes": {
+        "sde": 20.01302931596091,
+        "feature_write": 20.0,
+        "feature_readback": 20.0,
+        "spu_stream": 10.0,
+        "gaussian_bytes": 336.0
+      },
+      "start_time": "2026-10-10T08:52:01.007571",
+      "elapsed_time": 0.37136173248291016
+    },
+    {
+      "scene": "bench",
+      "total_cycles": 88984491.46777527,
+      "fps": 11.237913298208134,
+      "gfp_cycles": 1899452.7649769585,
+      "sort_cycles": 10077818.19102758,
+      "raster_cycles": 10104779.910152009,
+      "decode_cycles": 31124263.192183018,
+      "ftg_cycles": 0.0,
+      "semantic_cycles": 52554852.9953917,
+      "dram_cycles": 67764536.31933835,
+      "frame_cycles": [
+        88984491.46777527
+      ],
+      "frame_times": [
+        0.08898449146777528
+      ],
+      "module_busy": {
+        "gfp": 1899452.7649769585,
+        "hse": 10077818.19102758,
+        "ure": 10104779.910152009,
+        "sde": 31124263.192183018,
+        "semantic": 52554852.9953917,
+        "dram": 67764536.31933835
+      },
+      "dram_bytes": {
+        "gaussian_read": 48000000.0,
+        "sort_read": 3176472.0,
+        "raster_read": 133411824.0,
+        "feature_write": 1592524800.0,
+        "feature_readback": 1592524800.0
+      },
+      "pixels": {
+        "full": 1555200,
+        "coarse": 0,
+        "fine": 1555200.0,
+        "roi_fraction": 1.0,
+        "fallback_rate": 0.0,
+        "scar_skip_ratio": 0.0
+      },
+      "notes": {
+        "sde": 20.01302931596091,
+        "feature_write": 20.0,
+        "feature_readback": 20.0,
+        "spu_stream": 10.0,
+        "gaussian_bytes": 336.0
+      },
+      "start_time": "2026-10-10T08:52:01.549213",
+      "elapsed_time": 0.3791041374206543
+    }
+  ],
+  "generated_at": "2026-10-10T08:51:59.213826",
+  "config_path": "/tmp/dram_asic_3d_ovs.yaml",
+  "average_fps": 11.237913298208134
+}

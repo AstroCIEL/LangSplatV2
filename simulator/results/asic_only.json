@@ -1,0 +1,143 @@
+{
+  "scene": "figurines",
+  "total_cycles": 19931019.57667405,
+  "fps": 50.17304790419923,
+  "gfp_cycles": 1899452.7649769585,
+  "sort_cycles": 1039649.7987471239,
+  "raster_cycles": 2709021.1577488007,
+  "decode_cycles": 5709196.989122734,
+  "ftg_cycles": 130952.0,
+  "semantic_cycles": 9559029.679852532,
+  "dram_cycles": 14976964.898370989,
+  "frame_cycles": [
+    19931019.57667405
+  ],
+  "frame_times": [
+    0.019931019576674053
+  ],
+  "module_busy": {
+    "gfp": 1899452.7649769585,
+    "ftg": 130952.0,
+    "hse": 1039649.7987471239,
+    "ure": 2709021.1577488007,
+    "sde": 5709196.989122734,
+    "semantic": 9559029.679852532,
+    "dram": 14976964.898370989
+  },
+  "dram_bytes": {
+    "gaussian_read": 48000000.0,
+    "sort_read": 1993448.0,
+    "raster_read": 158637360.0,
+    "feature_write": 292120579.27680236,
+    "feature_readback": 292120579.2768
+  },
+  "pixels": {
+    "full": 1045440,
+    "coarse": 65340,
+    "fine": 219934.00319999742,
+    "roi_fraction": 0.3469141755062681,
+    "fallback_rate": 0.11,
+    "scar_skip_ratio": 0.68
+  },
+  "notes": {
+    "sde": 20.01302931596091,
+    "feature_write": 20.0,
+    "feature_readback": 20.0,
+    "spu_stream": 10.0,
+    "gaussian_bytes": 336.0
+  },
+  "start_time": "2026-10-09T07:37:41.586638",
+  "elapsed_time": 0.0841207504272461,
+  "config": {
+    "simulation": {
+      "dataset": "lerf",
+      "scene": "figurines",
+      "num_frames": 1,
+      "iteration": -1,
+      "camera_split": "test",
+      "camera_ids": "0",
+      "resolution": "1080x968"
+    },
+    "hardware": {
+      "clock_frequency": 1.0,
+      "pim_frequency": 0.2,
+      "gfp": {
+        "cull_cycles": 2.0,
+        "project_cycles": 2.0,
+        "bin_cycles": 2.0,
+        "culling_survival_rate": 1.0
+      },
+      "hse": {
+        "num_cores": 4,
+        "coarse_sort_cycles": 8.0,
+        "fine_sort_cycles": 10.0,
+        "bytes_per_gaussian": 8
+      },
+      "ure": {
+        "num_abus": 4,
+        "cores_per_abu": 64,
+        "cycles_per_pass": 1.0,
+        "bytes_per_gaussian": 0
+      },
+      "sde": {
+        "array_dim": 8,
+        "macs_per_cycle": 614,
+        "decode_k": 8,
+        "codebook_size": 64,
+        "num_levels": 3,
+        "clip_dim": 512,
+        "sparse_decode": true,
+        "output_buffer_tiles": 2
+      },
+      "ftg": {
+        "num_vrus": 4,
+        "cycles_per_coarse_pixel": 8.0,
+        "dilation_cycles_per_tile": 4.0
+      },
+      "semantic": {
+        "placement": "asic",
+        "num_channels": 4,
+        "banks_per_channel": 16,
+        "spus_per_channel": 8,
+        "lanes": 8,
+        "feature_bytes": 1024,
+        "result_bytes_coarse": 4,
+        "result_bytes_fine": 0.125,
+        "pdu_cycles_per_pixel": 1.0
+      },
+      "memory": {
+        "memory_bandwidth": 51.2,
+        "geom_bytes": 240,
+        "read_latency_hiding_rate": 0.3,
+        "row_buffer_bytes": 2048,
+        "tRCD_ns": 18,
+        "tRP_ns": 18,
+        "tRAS_ns": 42,
+        "tWR_ns": 34,
+        "tRRD_ns": 5,
+        "tREFI_ns": 3906,
+        "tRFC_ns": 180
+      }
+    },
+    "algorithm": {
+      "tile_size": 16,
+      "chunk_size": 64,
+      "coarse_downscale": 4,
+      "hls_enabled": true,
+      "scar_enabled": true,
+      "early_stop_ratio": 0.7,
+      "roi_fraction": 0.347,
+      "fallback_rate": 0.11,
+      "scar_skip_ratio": 0.68
+    },
+    "workload": {
+      "use_synthetic": true,
+      "num_gaussians": 200000,
+      "gaussian_tile_cover": 2
+    },
+    "output": {
+      "stats_file": "simulator/results/asic_only.json",
+      "verbose": true
+    }
+  }
+}

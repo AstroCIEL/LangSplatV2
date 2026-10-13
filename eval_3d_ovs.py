@@ -328,9 +328,15 @@ def evaluate(dataset:ModelParams, pipeline:PipelineParams, args):
             language_feature_image = language_feature_image / (language_feature_image.norm(dim=0, keepdim=True) + 1e-10)
             language_feature_image = language_feature_image.detach()
             language_feature_image = language_feature_image.permute(1, 2, 0)
-            sem_feat.append(language_feature_image)
+            # Keep features on CPU so large scenes (e.g. official lawn ~3M Gaussians)
+            # do not OOM when stacking 3 levels of HxWx512 maps.
+            sem_feat.append(language_feature_image.cpu())
+            del language_feature_image, gaussians, scene, model_params
+            torch.cuda.empty_cache()
 
-        restored_feat = torch.stack(sem_feat, dim=0)
+        restored_feat = torch.stack(sem_feat, dim=0).cuda()
+        del sem_feat
+        torch.cuda.empty_cache()
         if args.dataset_name == 'room':
             c_iou_list, c_lvl = segmentation_process_cuda_room(restored_feat, clip_model, args.mask_thresh, img_ann, list(img_ann.keys()), image_name)
         else:

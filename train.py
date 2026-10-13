@@ -178,7 +178,8 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations, checkpoi
             if (iteration in checkpoint_iterations):
                 print("\n[ITER {}] Saving Checkpoint".format(iteration))
                 torch.save((gaussians.capture(opt.include_feature), iteration), scene.model_path + "/chkpnt" + str(iteration) + ".pth")
-                if iteration == 10000:
+                # LangSplatV2 language stage is 10k iters; RGB stage must continue to 30k.
+                if opt.include_feature and iteration == 10000:
                     return
             
 def prepare_output_and_logger(args):    
@@ -261,10 +262,15 @@ if __name__ == "__main__":
     parser.add_argument('--normalize', action='store_true', default=False)
     parser.add_argument('--accum_iter', type=int, default=1)
     parser.add_argument('--topk', type=int, default=1)
+    # include_feature defaults to True via store_true, so it cannot be turned off from CLI.
+    parser.add_argument("--no_include_feature", action="store_true", default=False)
     args = parser.parse_args(sys.argv[1:])
     args.save_iterations.append(args.iterations)
+    if args.no_include_feature:
+        args.include_feature = False
     print(args)
-    args.model_path = args.model_path + f"_{str(args.feature_level)}"
+    if args.include_feature:
+        args.model_path = args.model_path + f"_{str(args.feature_level)}"
     print("Optimizing " + args.model_path)
 
     # Initialize system state (RNG)

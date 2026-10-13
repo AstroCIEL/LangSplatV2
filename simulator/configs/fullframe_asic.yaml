@@ -1,0 +1,81 @@
+# ASIC-only, HLS and SCAR off. Semantic features are written out and read
+# back; SPU throughput matches fullframe_pim.yaml.
+
+simulation:
+  dataset: lerf
+  scene: figurines
+  num_frames: 1
+  iteration: -1
+  camera_split: test
+  camera_ids: all
+
+hardware:
+  clock_frequency: 1.0
+  pim_frequency: 0.2
+  gfp:
+    cull_cycles: 2.0
+    project_cycles: 2.0
+    bin_cycles: 2.0
+    culling_survival_rate: 1.0
+  hse:
+    num_cores: 4
+    coarse_sort_cycles: 8.0
+    fine_sort_cycles: 10.0
+    bytes_per_gaussian: 8
+  ure:
+    num_abus: 4
+    cores_per_abu: 64
+    cycles_per_pass: 1.0
+    bytes_per_gaussian: 0
+  sde:
+    array_dim: 8
+    macs_per_cycle: 614
+    decode_k: 8
+    codebook_size: 64
+    num_levels: 3
+    clip_dim: 512
+    sparse_decode: true
+    output_buffer_tiles: 2
+  ftg:
+    num_vrus: 4
+    cycles_per_coarse_pixel: 8.0
+    dilation_cycles_per_tile: 4.0
+  semantic:
+    placement: asic
+    num_channels: 4
+    banks_per_channel: 16
+    spus_per_channel: 8
+    lanes: 8
+    feature_bytes: 1024
+    result_bytes_coarse: 4
+    result_bytes_fine: 0.125
+    pdu_cycles_per_pixel: 1.0
+  memory:
+    memory_bandwidth: 51.2
+    geom_bytes: 240
+    read_latency_hiding_rate: 0.3
+    row_buffer_bytes: 2048
+    tRCD_ns: 18
+    tRP_ns: 18
+    tRAS_ns: 42
+    tWR_ns: 34
+    tRRD_ns: 5
+    tREFI_ns: 3906
+    tRFC_ns: 180
+
+algorithm:
+  tile_size: 16
+  chunk_size: 64
+  coarse_downscale: 4
+  hls_enabled: false
+  scar_enabled: false
+  early_stop_ratio: 0.7
+
+workload:
+  use_synthetic: false
+  num_gaussians: 200000
+  gaussian_tile_cover: 2
+
+output:
+  stats_file: simulator/results/fullframe_asic.json
+  verbose: true

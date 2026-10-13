@@ -107,3 +107,5 @@ Desktop.ini
 
 # Caches
 .cache/
+
+logs/

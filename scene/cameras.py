@@ -59,8 +59,13 @@ class Camera(nn.Module):
         language_feature_name = os.path.join(language_feature_dir, self.image_name)
         seg_map = torch.from_numpy(np.load(language_feature_name + '_s.npy'))
         feature_map = torch.from_numpy(np.load(language_feature_name + '_f.npy'))
-        
-        y, x = torch.meshgrid(torch.arange(0, self.image_height), torch.arange(0, self.image_width))
+
+        # Map train resolution onto the (fixed) language-feature seg map.
+        # Needed when -r differs from the default 1080P resize used for LF extraction.
+        seg_h, seg_w = seg_map.shape[-2], seg_map.shape[-1]
+        ys = (torch.arange(0, self.image_height, dtype=torch.float32) * (seg_h / self.image_height)).long().clamp(0, seg_h - 1)
+        xs = (torch.arange(0, self.image_width, dtype=torch.float32) * (seg_w / self.image_width)).long().clamp(0, seg_w - 1)
+        y, x = torch.meshgrid(ys, xs, indexing='ij')
         x = x.reshape(-1, 1)
         y = y.reshape(-1, 1)
         seg = seg_map[:, y, x].squeeze(-1).long()

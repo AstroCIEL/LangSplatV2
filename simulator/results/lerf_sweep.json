@@ -1,0 +1,213 @@
+{
+  "mode": "multi_scene",
+  "dataset": "lerf",
+  "scenes": [
+    {
+      "scene": "figurines",
+      "total_cycles": 57199692.91684992,
+      "fps": 17.4826113394294,
+      "gfp_cycles": 1899452.7649769585,
+      "sort_cycles": 956318.2414314558,
+      "raster_cycles": 2574443.2091935617,
+      "decode_cycles": 54772608.614402086,
+      "ftg_cycles": 130952.0,
+      "semantic_cycles": 4057772.3179715825,
+      "dram_cycles": 9055026.469011525,
+      "frame_cycles": [
+        57199692.91684992
+      ],
+      "frame_times": [
+        0.05719969291684992
+      ],
+      "module_busy": {
+        "gfp": 1899452.7649769585,
+        "ftg": 130952.0,
+        "hse": 956318.2414314558,
+        "ure": 2574443.2091935617,
+        "sde": 54772608.614402086,
+        "semantic": 4057772.3179715825,
+        "dram": 9055026.469011525
+      },
+      "dram_bytes": {
+        "gaussian_read": 48000000.0,
+        "sort_read": 1993448.0,
+        "raster_read": 158637360.0,
+        "feature_write": 292120579.27680236,
+        "result_return": 288851.7504000015
+      },
+      "pixels": {
+        "full": 1045440,
+        "coarse": 65340,
+        "fine": 219934.00319999742,
+        "roi_fraction": 0.3469141755062681,
+        "fallback_rate": 0.11,
+        "scar_skip_ratio": 0.68
+      },
+      "notes": {
+        "sde": 192.0,
+        "feature_write": 20.0,
+        "feature_readback": 0.0,
+        "spu_stream": 10.0,
+        "gaussian_bytes": 336.0
+      },
+      "start_time": "2026-10-09T06:33:00.055563",
+      "elapsed_time": 0.1345367431640625
+    },
+    {
+      "scene": "teatime",
+      "total_cycles": 61838895.316549115,
+      "fps": 16.171052132821387,
+      "gfp_cycles": 1899452.7649769585,
+      "sort_cycles": 956318.2414314558,
+      "raster_cycles": 2524931.580799556,
+      "decode_cycles": 59436032.40959848,
+      "ftg_cycles": 130952.0,
+      "semantic_cycles": 4132130.686636391,
+      "dram_cycles": 9521817.725333778,
+      "frame_cycles": [
+        61838895.316549115
+      ],
+      "frame_times": [
+        0.06183889531654912
+      ],
+      "module_busy": {
+        "gfp": 1899452.7649769585,
+        "ftg": 130952.0,
+        "hse": 956318.2414314558,
+        "ure": 2524931.580799556,
+        "sde": 59436032.40959848,
+        "semantic": 4132130.686636391,
+        "dram": 9521817.725333778
+      },
+      "dram_bytes": {
+        "gaussian_read": 48000000.0,
+        "sort_read": 1993448.0,
+        "raster_read": 155607312.0,
+        "feature_write": 316992172.8511907,
+        "result_return": 291887.8336000377
+      },
+      "pixels": {
+        "full": 1045440,
+        "coarse": 65340,
+        "fine": 244222.66879999224,
+        "roi_fraction": 0.3999517839922854,
+        "fallback_rate": 0.08,
+        "scar_skip_ratio": 0.59
+      },
+      "notes": {
+        "sde": 192.0,
+        "feature_write": 20.0,
+        "feature_readback": 0.0,
+        "spu_stream": 10.0,
+        "gaussian_bytes": 336.0
+      },
+      "start_time": "2026-10-09T06:33:00.434600",
+      "elapsed_time": 0.11997699737548828
+    },
+    {
+      "scene": "ramen",
+      "total_cycles": 78623770.44951345,
+      "fps": 12.718799852547498,
+      "gfp_cycles": 1899452.7649769585,
+      "sort_cycles": 956318.2414314558,
+      "raster_cycles": 2739975.56795794,
+      "decode_cycles": 76258019.32799676,
+      "ftg_cycles": 130952.0,
+      "semantic_cycles": 5133943.599079511,
+      "dram_cycles": 11555030.072695205,
+      "frame_cycles": [
+        78623770.44951345
+      ],
+      "frame_times": [
+        0.07862377044951345
+      ],
+      "module_busy": {
+        "gfp": 1899452.7649769585,
+        "ftg": 130952.0,
+        "hse": 956318.2414314558,
+        "ure": 2739975.56795794,
+        "sde": 76258019.32799676,
+        "semantic": 5133943.599079511,
+        "dram": 11555030.072695205
+      },
+      "dram_bytes": {
+        "gaussian_read": 48000000.0,
+        "sort_read": 1993448.0,
+        "raster_read": 168274848.0,
+        "feature_write": 406709436.4159953,
+        "result_return": 302839.647999961
+      },
+      "pixels": {
+        "full": 1045440,
+        "coarse": 65340,
+        "fine": 331837.18400000397,
+        "roi_fraction": 0.5819672131147541,
+        "fallback_rate": 0.07,
+        "scar_skip_ratio": 0.55
+      },
+      "notes": {
+        "sde": 192.0,
+        "feature_write": 20.0,
+        "feature_readback": 0.0,
+        "spu_stream": 10.0,
+        "gaussian_bytes": 336.0
+      },
+      "start_time": "2026-10-09T06:33:00.739287",
+      "elapsed_time": 0.13007164001464844
+    },
+    {
+      "scene": "kitchen",
+      "total_cycles": 84727947.42332585,
+      "fps": 11.802481122358653,
+      "gfp_cycles": 1899452.7649769585,
+      "sort_cycles": 956318.2414314558,
+      "raster_cycles": 2873650.6441187044,
+      "decode_cycles": 82305774.79680374,
+      "ftg_cycles": 130952.0,
+      "semantic_cycles": 5699161.612904628,
+      "dram_cycles": 12348864.647117881,
+      "frame_cycles": [
+        84727947.42332585
+      ],
+      "frame_times": [
+        0.08472794742332586
+      ],
+      "module_busy": {
+        "gfp": 1899452.7649769585,
+        "ftg": 130952.0,
+        "hse": 956318.2414314558,
+        "ure": 2873650.6441187044,
+        "sde": 82305774.79680374,
+        "semantic": 5699161.612904628,
+        "dram": 12348864.647117881
+      },
+      "dram_bytes": {
+        "gaussian_read": 48000000.0,
+        "sort_read": 1993448.0,
+        "raster_read": 177088464.0,
+        "feature_write": 438964132.24958336,
+        "result_return": 306776.9888000535
+      },
+      "pixels": {
+        "full": 1045440,
+        "coarse": 65340,
+        "fine": 363335.9103999875,
+        "roi_fraction": 0.6299421407907425,
+        "fallback_rate": 0.13,
+        "scar_skip_ratio": 0.61
+      },
+      "notes": {
+        "sde": 192.0,
+        "feature_write": 20.0,
+        "feature_readback": 0.0,
+        "spu_stream": 10.0,
+        "gaussian_bytes": 336.0
+      },
+      "start_time": "2026-10-09T06:33:01.054019",
+      "elapsed_time": 0.14379215240478516
+    }
+  ],
+  "generated_at": "2026-10-09T06:32:59.817694",
+  "config_path": "/tmp/silf_sweep.yaml",
+  "average_fps": 14.543736111789235
+}

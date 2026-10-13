@@ -1,0 +1,91 @@
+# SILF: ASIC-PIM + HLS + SCAR.
+# Run from the LangSplatV2 root:
+#   python -m simulator.main --config simulator/configs/silf.yaml
+# Leave scene empty to sweep every scene of the dataset.
+
+simulation:
+  dataset: lerf
+  scene: figurines
+  num_frames: 1
+  # resolution, roi_fraction, fallback_rate, scar_skip_ratio come from the paper table
+  # model_path: "output/figurines_0_1"
+  # source_path: "data/lerf/figurines"
+  iteration: -1
+  camera_split: test
+  camera_ids: "0"
+
+hardware:
+  clock_frequency: 1.0       # ASIC, GHz. PIM logic is pim_frequency.
+  pim_frequency: 0.2
+  gfp:
+    cull_cycles: 2.0         # per scene Gaussian
+    project_cycles: 2.0      # per visible Gaussian
+    bin_cycles: 2.0
+    culling_survival_rate: 1.0
+  hse:
+    num_cores: 4             # one sorter per ABU; GSCore hierarchical sort
+    coarse_sort_cycles: 8.0  # per chunk, not per Gaussian
+    fine_sort_cycles: 10.0
+    bytes_per_gaussian: 8    # depth key + id
+  ure:
+    num_abus: 4
+    cores_per_abu: 64        # 4 * 64 = 256 raster cores, 16x16 tiles
+    cycles_per_pass: 1.0
+    bytes_per_gaussian: 0    # 0 → geom_bytes + language payload
+  sde:
+    array_dim: 8             # codewords per level (paper K), not the MAC count
+    # MACs/pixel = num_levels * decode_k * clip_dim = 3*8*512 = 12288.
+    # K*K = 64 MACs/cycle → 192 cycles/pixel, while a 512-d reload is only
+    # 1024/51.2 ≈ 20 cycles/pixel, so PIM cannot move end-to-end FPS.
+    # 614 MACs/cycle makes decode 20 cycles/pixel, same order as the
+    # feature stream. End-to-end speedup is then 1 + T_reload / (T_sde + T_spu).
+    macs_per_cycle: 614
+    decode_k: 8              # codewords accumulated per level
+    codebook_size: 64
+    num_levels: 3            # LangSplatV2 stacks three feature levels
+    clip_dim: 512
+    sparse_decode: true
+    output_buffer_tiles: 2
+  ftg:
+    num_vrus: 4
+    cycles_per_coarse_pixel: 8.0
+    dilation_cycles_per_tile: 4.0
+  semantic:
+    placement: pim           # pim | asic
+    num_channels: 4
+    banks_per_channel: 16
+    spus_per_channel: 8      # 32 SPUs, one per two banks
+    lanes: 8
+    feature_bytes: 1024      # 512 x FP16 written to DRAM
+    result_bytes_coarse: 4   # (s, n)
+    result_bytes_fine: 0.125 # predicate bit
+    pdu_cycles_per_pixel: 1.0
+  memory:
+    memory_bandwidth: 51.2   # GB/s, 4 x16 LPDDR5 channels at 6.4 Gb/s/pin
+    geom_bytes: 240
+    read_latency_hiding_rate: 0.3
+    row_buffer_bytes: 2048
+    tRCD_ns: 18
+    tRP_ns: 18
+    tRAS_ns: 42
+    tWR_ns: 34
+    tRRD_ns: 5               # bank-group ACT spacing; not in the paper table
+    tREFI_ns: 3906
+    tRFC_ns: 180
+
+algorithm:
+  tile_size: 16
+  chunk_size: 64
+  coarse_downscale: 4        # coarse render is 1/4 per side
+  hls_enabled: true
+  scar_enabled: true
+  early_stop_ratio: 0.7
+
+workload:
+  use_synthetic: true
+  num_gaussians: 200000
+  gaussian_tile_cover: 2
+
+output:
+  stats_file: simulator/results/silf.json
+  verbose: true
